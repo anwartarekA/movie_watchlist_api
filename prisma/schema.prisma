@@ -33,8 +33,9 @@ model Movie{
   id String @id @default(uuid())
   user_id String
   title String
-  rating String
+  rating Int
   releaseYear Int
+  runtime Int
   genres String[] @default([])
   url String
   watchList WatchListItem[] @relation("watchlistsForMovie")
