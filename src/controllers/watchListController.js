@@ -33,3 +33,59 @@ export const addToWatchList = catchAsync(async (req, res, next) => {
     },
   });
 });
+// get all watchlist
+export const getAllWatchList = catchAsync(async (req, res, next) => {
+  const watchlistItems = await prisma.watchListItem.findMany({
+    select: {
+      rating: true,
+      status: true,
+      user: {
+        select: {
+          name: true,
+        },
+      },
+      movie: {
+        select: {
+          title: true,
+          rating: true,
+        },
+      },
+    },
+  });
+  if (!watchlistItems) return next(new AppError("no watchlist found", 500));
+  res.status(200).json({
+    status: "success",
+    data: {
+      watchlistItems,
+    },
+  });
+});
+// get watchlist
+export const getWatchList = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  if (!id) return next(new AppError("provide id", 400));
+  const watchlist = await prisma.watchListItem.findFirst({
+    where: { id },
+    select: {
+      user: {
+        select: {
+          name: true,
+        },
+      },
+      movie: {
+        select: {
+          title: true,
+          rating: true,
+        },
+      },
+    },
+  });
+  if (!watchlist)
+    return next(new AppError("no watchlist found with that id", 404));
+  res.status(200).json({
+    status: "success",
+    data: {
+      watchlist,
+    },
+  });
+});
