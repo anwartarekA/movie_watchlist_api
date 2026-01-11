@@ -91,7 +91,12 @@ const main = async () => {
     console.log("movie is created");
   }
   console.log("movies are created.");
-  await disconnectDB();
-  process.exit(0);
 };
-main();
+main()
+  .catch((err) => {
+    console.log(err);
+  })
+  .finally(async () => {
+    await disconnectDB();
+    process.exit(0);
+  });

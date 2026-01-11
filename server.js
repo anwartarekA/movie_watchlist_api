@@ -3,11 +3,15 @@ connectDB();
 import express from "express";
 import errorHandling from "./src/config/utils/errorHandling.js";
 import userRouter from "./src/routes/authRoutes.js";
+import watchListRouter from "./src/routes/watchListRoutes.js";
+import cookieParser from "cookie-parser";
 const app = express();
 const port = 3000;
 app.use(express.json());
+app.use(cookieParser());
 app.use(errorHandling);
 app.use("/auth", userRouter);
+app.use("/watchlist", watchListRouter);
 const server = app.listen(port, () =>
   console.log(`server is listening on port ${port}`),
 );
