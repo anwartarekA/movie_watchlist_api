@@ -33,4 +33,39 @@ export const register = catchAsync(async (req, res, next) => {
 });
 export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
+  if (!email || !password)
+    return next(new AppError("provide email or password", 400));
+  // get user by email
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+  // if (!user) return next(new AppError("unauthenticated user", 401));
+  // compare two passwords
+  if (!user || !(await bcrypt.compare(password, user.password)))
+    return next(
+      new AppError("unauthenticated user, invalid email or password", 401),
+    );
+  // create token
+  const token = jwt.sign({ id: user.id }, process.env.SECRET_JWT, {
+    expiresIn: process.env.EXPIRES_IN,
+  });
+  createTokenAndSendCookie(res, user);
+  res.status(200).json({
+    status: "success",
+    data: {
+      user,
+      token,
+    },
+  });
+});
+export const logout = catchAsync(async (req, res, next) => {
+  res.cookie("token", "", {
+    expires: new Date(Date.now() + 1 * 1000),
+    sameSite: "Strict",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+  });
+  res.status(200).json({
+    status: "loged out",
+  });
 });
