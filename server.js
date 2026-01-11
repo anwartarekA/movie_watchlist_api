@@ -1,9 +1,11 @@
-import { prisma, connectDB, disconnectDB } from "./src/utils/db/connectDB.js";
+import { prisma, connectDB, disconnectDB } from "./src/config/db/connectDB.js";
 connectDB();
 import express from "express";
+import errorHandling from "./src/config/utils/errorHandling.js";
 const app = express();
 const port = 3000;
 app.get("/", (req, res) => res.end("hello"));
+app.use(errorHandling);
 const server = app.listen(port, () =>
   console.log(`server is listening on port ${port}`),
 );
