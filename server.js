@@ -2,10 +2,12 @@ import { prisma, connectDB, disconnectDB } from "./src/config/db/connectDB.js";
 connectDB();
 import express from "express";
 import errorHandling from "./src/config/utils/errorHandling.js";
+import userRouter from "./src/routes/authRoutes.js";
 const app = express();
 const port = 3000;
-app.get("/", (req, res) => res.end("hello"));
+app.use(express.json());
 app.use(errorHandling);
+app.use("/auth", userRouter);
 const server = app.listen(port, () =>
   console.log(`server is listening on port ${port}`),
 );
