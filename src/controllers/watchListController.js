@@ -67,6 +67,8 @@ export const getWatchList = catchAsync(async (req, res, next) => {
   const watchlist = await prisma.watchListItem.findFirst({
     where: { id },
     select: {
+      status: true,
+      rating: true,
       user: {
         select: {
           name: true,
@@ -86,6 +88,46 @@ export const getWatchList = catchAsync(async (req, res, next) => {
     status: "success",
     data: {
       watchlist,
+    },
+  });
+});
+export const updateWatchList = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  if (!id) return next(new AppError("provide id", 400));
+  const updatedWatchList = await prisma.watchListItem.update({
+    where: { id },
+    data: {
+      user_id: req.body.user_id,
+      movie_id: req.body.movie_id,
+      rating: req.body.rating,
+      status: req.body.status,
+      notes: req.body.notes,
+    },
+  });
+  if (!updatedWatchList)
+    return next(new AppError("no watchlist found with that id", 400));
+  res.status(200).json({
+    status: "success",
+    data: {
+      updatedWatchList,
+    },
+  });
+});
+// delete watchlist
+export const deleteWatchList = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  if (!id) return next(new AppError("provide id", 400));
+  const deletedWatchList = await prisma.watchListItem.delete({
+    where: {
+      id,
+    },
+  });
+  if (!deleteWatchList)
+    return next(new AppError("no watchlist found with that id", 404));
+  res.status(200).json({
+    status: "success",
+    data: {
+      deletedWatchList,
     },
   });
 });
