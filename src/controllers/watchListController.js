@@ -168,3 +168,29 @@ export const getMostWatchlist = catchAsync(async (req, res, next) => {
     },
   });
 });
+// get max rate
+export const getMaxRating = catchAsync(async (req, res, next) => {
+  const maxRating = await prisma.watchListItem.groupBy({
+    by: ["movie_id"],
+    _max: {
+      rating: true,
+    },
+    orderBy: {
+      _max: {
+        rating: "desc",
+      },
+    },
+    take: 3,
+  });
+  const finalResult = [];
+  maxRating.forEach((item) => {
+    let rateObj = {};
+    rateObj["id"] = item.movie_id;
+    rateObj["rating"] = item._max.rating;
+    finalResult.push(rateObj);
+  });
+  res.status(200).json({
+    status: "success",
+    maxRating: finalResult,
+  });
+});

@@ -7,9 +7,12 @@ import {
   updateWatchList,
   deleteWatchList,
   getMostWatchlist,
+  getMaxRating,
 } from "./../controllers/watchListController.js";
 import protect from "../config/utils/protect.js";
 router.get("/most-watchlist", getMostWatchlist);
+router.get("/maxRating", getMaxRating);
+
 router.use(protect);
 router.route("/").post(addToWatchList).get(getAllWatchList);
 router
