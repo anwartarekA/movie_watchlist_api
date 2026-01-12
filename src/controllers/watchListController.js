@@ -131,3 +131,40 @@ export const deleteWatchList = catchAsync(async (req, res, next) => {
     },
   });
 });
+// get the most 3 wathchlist
+export const getMostWatchlist = catchAsync(async (req, res, next) => {
+  const mostWatchlist = await prisma.watchListItem.groupBy({
+    by: ["movie_id"],
+    _count: {
+      movie_id: 1,
+    },
+    orderBy: {
+      _count: {
+        movie_id: "desc",
+      },
+    },
+    take: 3,
+  });
+  const finalResult = [];
+  await Promise.all(
+    mostWatchlist.map(async (item) => {
+      let newItem = {};
+      newItem["title"] = Object.values(
+        await prisma.movie.findUnique({
+          where: { id: item.movie_id },
+          select: {
+            title: true,
+          },
+        }),
+      )[0];
+      newItem["count"] = item._count.movie_id;
+      finalResult.push(newItem);
+    }),
+  );
+  res.status(200).json({
+    status: "success",
+    data: {
+      mostWatchlist: finalResult,
+    },
+  });
+});
