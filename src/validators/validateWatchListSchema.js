@@ -1,6 +1,5 @@
 import { z } from "zod";
 export const validateAddWatchListSchema = z.object({
-  user_id: z.string().uuid(),
   movie_id: z.string().uuid(),
   status: z.enum(["PLANNED", "WATCHING", "COMPELETED", "DROPPED"], {
     error: () => ({
@@ -8,8 +7,8 @@ export const validateAddWatchListSchema = z.object({
     }),
   }),
   rating: z.coerce
-    .number()
-    .int("rating must be integer")
+    .number("rating must be a number")
+    .int("rating must be an integer")
     .min(1, "rating is between 1 and 10")
     .max(10, "rating is between 1 and 10")
     .optional(),
